@@ -4,6 +4,16 @@
     <option name="customVMPath" />
     <option name="linkedExternalProjectsSettings">
       <SbtProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../../example/progfun1-example/example" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../../example/progfun1-example/example" />
+            <option value="$PROJECT_DIR$/../../example/progfun1-example/example/project" />
+          </set>
+        </option>
+        <option name="sbtVersion" value="1.1.6" />
+      </SbtProjectSettings>
+      <SbtProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>

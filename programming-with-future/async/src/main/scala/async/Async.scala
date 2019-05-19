@@ -26,7 +26,9 @@ object Async {
     * should return a successful `Future` with the same value.
     */
   def recoverFailure(eventuallyX: Future[Int]): Future[Int] =
-    ???
+    eventuallyX flatMap {
+      x => Future(x)
+    }
 
   /**
     * Perform two asynchronous computation, one after the other. `makeAsyncComputation2`

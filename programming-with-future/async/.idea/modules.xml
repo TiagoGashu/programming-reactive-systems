@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example.iml" filepath="$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example-build.iml" filepath="$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/reactive-async.iml" filepath="$PROJECT_DIR$/.idea/modules/reactive-async.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/reactive-async-build.iml" filepath="$PROJECT_DIR$/.idea/modules/reactive-async-build.iml" />
     </modules>

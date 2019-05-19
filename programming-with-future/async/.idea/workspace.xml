@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="441447f0-110a-496f-a7b0-756ac441e7a5" name="Default Changelist" comment="" />
+    <list default="true" id="441447f0-110a-496f-a7b0-756ac441e7a5" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example-build.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../../example/progfun1-example/example/.idea/modules/progfun1-example.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_modules_scala_parser_combinators_2_11_1_0_4_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sbt.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sbt.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/scala_compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/scala_compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/scala/async/Async.scala" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/scala/async/Async.scala" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/scala-2.11/classes/async/Async$.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/scala-2.11/classes/async/Async$.class" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
     <ignored path="$PROJECT_DIR$/project/target/" />
+    <ignored path="$PROJECT_DIR$/../../example/progfun1-example/example/target/" />
+    <ignored path="$PROJECT_DIR$/../../example/progfun1-example/example/project/project/target/" />
+    <ignored path="$PROJECT_DIR$/../../example/progfun1-example/example/project/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,17 +30,37 @@
     <option name="delegatedBuild" value="true" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/../../example/progfun1-example/example">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
   </component>
+  <component name="ExternalProjectsManager">
+    <system id="SBT">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="reactive-async" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/async/Async.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="34" lean-forward="true" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+            <state relative-caret-position="390">
+              <caret line="26" column="6" selection-start-line="26" selection-start-column="6" selection-end-line="26" selection-end-column="6" />
               <folding>
                 <element signature="e#15#56#0" expanded="true" />
               </folding>
@@ -36,10 +69,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../example/progfun1-example/example/src/test/scala/example/ListsSuite.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="383">
+              <caret line="120" selection-start-line="120" selection-end-line="120" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../example/progfun1-example/example/src/main/scala/example/Lists.scala">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="398">
+              <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="jar://$USER_HOME$/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.12/scala-library-2.11.12-sources.jar!/scala/concurrent/Future.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="247" column="6" selection-start-line="247" selection-start-column="6" selection-end-line="247" selection-end-column="6" />
+            <state relative-caret-position="187">
+              <caret line="475" column="6" selection-start-line="475" selection-start-column="6" selection-end-line="475" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -47,8 +98,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/scala/async/AsyncSuite.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+            <state relative-caret-position="240">
+              <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -62,43 +113,16 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/main/scala/async/Async.scala" />
+        <option value="$PROJECT_DIR$/../../example/progfun1-example/example/src/test/scala/example/ListsSuite.scala" />
+        <option value="$PROJECT_DIR$/../../example/progfun1-example/example/src/main/scala/example/Lists.scala" />
       </list>
     </option>
   </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/misc.xml" />
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-        <option value="$PROJECT_DIR$/.idea/modules.xml" />
-        <option value="$PROJECT_DIR$/.idea/scala_compiler.xml" />
-        <option value="$PROJECT_DIR$/.idea/sbt.xml" />
-        <option value="$PROJECT_DIR$/.idea/modules/reactive-async.iml" />
-        <option value="$PROJECT_DIR$/.idea/modules/reactive-async-build.iml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_actor_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_actor_testkit_typed_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_actor_typed_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_protobuf_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_stream_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_stream_testkit_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_stream_typed_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_akka_akka_testkit_2_11_2_5_21_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_config_1_3_3_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__com_typesafe_ssl_config_core_2_11_0_3_7_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__junit_junit_4_10_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_hamcrest_hamcrest_core_1_1_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_reactivestreams_reactive_streams_1_0_2_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_modules_scala_java8_compat_2_11_0_7_0_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_modules_scala_parser_combinators_2_11_1_1_1_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_modules_scala_xml_2_11_1_0_6_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_scala_library_2_11_12_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_lang_scala_reflect_2_11_12_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scala_sbt_test_interface_1_0_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scalacheck_scalacheck_2_11_1_13_5_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scalactic_scalactic_2_11_3_0_5_jar.xml" />
-        <option value="$PROJECT_DIR$/.idea/libraries/sbt__org_scalatest_scalatest_2_11_3_0_5_jar.xml" />
-      </list>
-    </option>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="295" />
@@ -112,14 +136,79 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="common" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="async" type="b2602c69:ProjectViewProjectNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="scala" type="462c0819:PsiDirectoryNode" />
+              <item name="example" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
       <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../example/progfun1-example/example" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -133,7 +222,22 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.ListsSuite">
+    <configuration name="ListsSuite" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="progfun1-example" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="example.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="example" />
+      <option name="MAIN_CLASS_NAME" value="example.ListsSuite" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="AsyncSuite" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
       <module name="reactive-async" />
       <setting name="path" value="async.AsyncSuite" />
@@ -152,15 +256,96 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="AsyncSuite.recoverFailure should recover from failed computations" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <module name="reactive-async" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <setting name="jrePath" value="" />
+      <envs />
+      <setting name="testKind" value="Test name" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="testName" value="recoverFailure should recover from failed computations" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AsyncSuite.transformSuccess should propagate the failure of a failed computation" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <module name="reactive-async" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <setting name="jrePath" value="" />
+      <envs />
+      <setting name="testKind" value="Test name" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="testName" value="transformSuccess should propagate the failure of a failed computation" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AsyncSuite.transformSuccess should transform successful computations" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true">
+      <module name="reactive-async" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="showProgressMessages" value="true" />
+      <setting name="useSbt" value="false" />
+      <setting name="useUiWithSbt" value="false" />
+      <setting name="jrePath" value="" />
+      <envs />
+      <setting name="testKind" value="Test name" />
+      <setting name="path" value="async.AsyncSuite" />
+      <setting name="testName" value="transformSuccess should transform successful computations" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.ListsSuite" />
+        <item itemvalue="ScalaTest.AsyncSuite.transformSuccess should propagate the failure of a failed computation" />
+        <item itemvalue="ScalaTest.AsyncSuite.recoverFailure should recover from failed computations" />
         <item itemvalue="ScalaTest.AsyncSuite" />
+        <item itemvalue="ScalaTest.AsyncSuite.transformSuccess should transform successful computations" />
       </list>
     </recent_temporary>
   </component>
   <component name="SbtLocalSettings">
     <option name="availableProjects">
       <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="progfun1-example" />
+              <option name="path" value="$PROJECT_DIR$/../../example/progfun1-example/example" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="example [file:/home/tiago/wspace/programming-reactive-systems/example/progfun1-example/example/]" />
+                <option name="path" value="$PROJECT_DIR$/../../example/progfun1-example/example" />
+              </ExternalProjectPojo>
+              <ExternalProjectPojo>
+                <option name="name" value="progfun1-example-build" />
+                <option name="path" value="$PROJECT_DIR$/../../example/progfun1-example/example/project" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
         <entry>
           <key>
             <ExternalProjectPojo>
@@ -185,6 +370,14 @@
     </option>
     <option name="modificationStamps">
       <map>
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/build.sbt" value="2959508787" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/MOOCPlugin.scala" value="2976220008" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/StudentPlugin.scala" value="3842137593" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/StyleChecker.scala" value="2718938948" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/build.properties" value="2678115315" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/buildSettings.sbt" value="2446188345" />
+        <entry key="$PROJECT_DIR$/../../example/progfun1-example/example/project/plugins.sbt" value="4025950404" />
+        <entry key="$PROJECT_DIR$" value="10838057262000" />
         <entry key="$PROJECT_DIR$/build.sbt" value="1911855953" />
         <entry key="$PROJECT_DIR$/project/MOOCPlugin.scala" value="2976220008" />
         <entry key="$PROJECT_DIR$/project/StudentPlugin.scala" value="3842137593" />
@@ -214,13 +407,39 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="AsyncSuite - 2019.05.19 at 11h 12m 07s.xml">
+    <history-entry file="AsyncSuite - 2019.05.19 at 14h 38m 11s.xml">
       <configuration name="AsyncSuite" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="AsyncSuite_transformSuccess_should_transform_successful_computations - 2019.05.19 at 14h 38m 31s.xml">
+      <configuration name="AsyncSuite.transformSuccess should transform successful computations" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="AsyncSuite_transformSuccess_should_propagate_the_failure_of_a_failed_computation - 2019.05.19 at 14h 38m 47s.xml">
+      <configuration name="AsyncSuite.transformSuccess should propagate the failure of a failed computation" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="AsyncSuite - 2019.05.19 at 14h 38m 54s.xml">
+      <configuration name="AsyncSuite" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="AsyncSuite_recoverFailure_should_recover_from_failed_computations - 2019.05.19 at 14h 52m 28s.xml">
+      <configuration name="AsyncSuite.recoverFailure should recover from failed computations" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="AsyncSuite_transformSuccess_should_propagate_the_failure_of_a_failed_computation - 2019.05.19 at 14h 52m 53s.xml">
+      <configuration name="AsyncSuite.transformSuccess should propagate the failure of a failed computation" configurationId="ScalaTestRunConfiguration" />
+    </history-entry>
+    <history-entry file="ListsSuite - 2019.05.19 at 15h 19m 32s.xml">
+      <configuration name="ListsSuite" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ListsSuite - 2019.05.19 at 15h 20m 15s.xml">
+      <configuration name="ListsSuite" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ListsSuite - 2019.05.19 at 15h 20m 51s.xml">
+      <configuration name="ListsSuite" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ListsSuite - 2019.05.19 at 15h 22m 04s.xml">
+      <configuration name="ListsSuite" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
     <frame x="52" y="27" width="1868" height="1053" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Designer" />
       <window_info id="Image Layers" />
@@ -234,25 +453,29 @@
       <window_info anchor="bottom" id="Terminal" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Messages" />
+      <window_info anchor="bottom" id="Messages" weight="0.3293348" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3293348" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3293348" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="right" id="Maven" />
+      <window_info anchor="right" id="Maven" weight="0.3298573" />
       <window_info anchor="right" id="Palette" />
-      <window_info anchor="right" id="sbt" />
+      <window_info anchor="right" id="sbt" visible="true" weight="0.3298573" />
       <window_info anchor="right" id="Capture Analysis" />
       <window_info anchor="right" id="Gradle" />
       <window_info anchor="right" id="Palette&#9;" />
       <window_info anchor="right" id="Theme Preview" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24972558" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/assignment.sbt">
@@ -269,13 +492,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/scala/async/AsyncSuite.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build.sbt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-127" />
@@ -283,18 +499,39 @@
     </entry>
     <entry file="jar://$USER_HOME$/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.12/scala-library-2.11.12-sources.jar!/scala/concurrent/Future.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="247" column="6" selection-start-line="247" selection-start-column="6" selection-end-line="247" selection-end-column="6" />
+        <state relative-caret-position="187">
+          <caret line="475" column="6" selection-start-line="475" selection-start-column="6" selection-end-line="475" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/async/AsyncSuite.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="41" column="4" selection-start-line="41" selection-start-column="4" selection-end-line="41" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/async/Async.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="34" lean-forward="true" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+        <state relative-caret-position="390">
+          <caret line="26" column="6" selection-start-line="26" selection-start-column="6" selection-end-line="26" selection-end-column="6" />
           <folding>
             <element signature="e#15#56#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../example/progfun1-example/example/src/test/scala/example/ListsSuite.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="383">
+          <caret line="120" selection-start-line="120" selection-end-line="120" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../example/progfun1-example/example/src/main/scala/example/Lists.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="398">
+          <caret line="49" column="26" selection-start-line="49" selection-start-column="26" selection-end-line="49" selection-end-column="26" />
         </state>
       </provider>
     </entry>

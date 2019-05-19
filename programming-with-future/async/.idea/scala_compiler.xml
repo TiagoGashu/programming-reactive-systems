@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="async_9880" />
+    <profile name="sbt 1" modules="async_9880,example_3223" />
     <profile name="sbt 2" modules="reactive-async">
       <option name="experimental" value="true" />
       <option name="deprecationWarnings" value="true" />
@@ -16,6 +16,9 @@
         <parameter value="-Ywarn-value-discard" />
         <parameter value="-Xfuture" />
       </parameters>
+    </profile>
+    <profile name="sbt 3" modules="progfun1-example">
+      <option name="deprecationWarnings" value="true" />
     </profile>
   </component>
 </project>
