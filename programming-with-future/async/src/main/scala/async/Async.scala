@@ -26,8 +26,8 @@ object Async {
     * should return a successful `Future` with the same value.
     */
   def recoverFailure(eventuallyX: Future[Int]): Future[Int] =
-    eventuallyX flatMap {
-      x => Future(x)
+    eventuallyX.recover {
+      case e: Throwable => -1
     }
 
   /**
@@ -43,7 +43,9 @@ object Async {
     makeAsyncComputation1: () => Future[A],
     makeAsyncComputation2: () => Future[B]
   ): Future[(A, B)] =
-    ???
+    makeAsyncComputation1().flatMap {
+      x1 => makeAsyncComputation2().map(x2 => (x1, x2))
+    }
 
   /**
     * Concurrently perform two asynchronous computations and pair their successful
@@ -55,7 +57,7 @@ object Async {
     makeAsyncComputation1: () => Future[A],
     makeAsyncComputation2: () => Future[B]
   ): Future[(A, B)] =
-    ???
+    makeAsyncComputation1() zip makeAsyncComputation2()
 
   /**
     * Attempt to perform an asynchronous computation.
@@ -63,8 +65,13 @@ object Async {
     * the asynchronous computation so that at most `maxAttempts`
     * are eventually performed.
     */
-  def insist[A](makeAsyncComputation: () => Future[A], maxAttempts: Int): Future[A] =
-    ???
+  def insist[A](makeAsyncComputation: () => Future[A], maxAttempts: Int): Future[A] = {
+    def retry(f: () => Future[A], maxAttempts: Int, attempt: Int): Future[A] = {
+      if(maxAttempts == attempt) Future.failed(new RuntimeException("Exceeded max attempts"))
+      else f() recoverWith { case e: Throwable => retry(f, maxAttempts, attempt + 1) }
+    }
+    retry(makeAsyncComputation, maxAttempts, 0)
+  }
 
   /**
     * Dummy example of a callback-based API
@@ -85,7 +92,15 @@ object Async {
     * @return A `FutureBasedApi` that forwards calls to `computeIntAsync` to the `callbackBasedApi`
     *         and returns its result in a `Future` value
     */
-  def futurize(callbackBasedApi: CallbackBasedApi): FutureBasedApi =
-    ???
+    def futurize(callbackBasedApi: CallbackBasedApi): FutureBasedApi = {
+      var value: Int = 0
+      val eventuallyInteger = Future[Int] {
+        callbackBasedApi.computeIntAsync(x => {
+          value = x.get
+        })
+        value
+      }
+      () => eventuallyInteger
+  }
 
 }
