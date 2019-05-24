@@ -2,3 +2,26 @@ programming-with-future/async/target/
 
 *.class
 *.log
+*/target/*
+*/target/**
+*/.idea/*
+*/.idea/**
+
+example/progfun1-example/example/target/
+example/progfun1-example/example/.idea/
+example/progfun1-example/example/project/target/
+
+lecture-2/target/
+lecture-2/.idea/
+lecture-2/project/target/
+
+programming-with-future/async/target/
+programming-with-future/async/.idea/
+programming-with-future/async/project/target/
+
+/**/target/*
+/**/target/**
+/**/.idea/*
+/**/.idea/**
+/**/project/target/*
+/**/project/target/**
