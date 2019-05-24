@@ -5,7 +5,7 @@ import akka.actor.{Actor, ActorSystem, Props}
 /**
   * @author tiagogashu on 23/05/19
   **/
-object BankAccountCase {
+object BankAccount {
   case class CreateAccount(initialAmount: BigInt) {
     require(initialAmount > 0)
   }
@@ -15,52 +15,55 @@ object BankAccountCase {
   case class Withdraw(amount: BigInt) {
     require(amount > 0)
   }
-  case object BankStatement
-  case class BankStatementRet(amount: BigInt)
+  case object FetchBankStatement
+  case class BankStatement(balance: BigInt)
   case class Done(message: String)
   case class Failed(message: String)
 }
 
-class BankAccountCase extends Actor {
-  import BankAccountCase._
+class BankAccount extends Actor {
+  import BankAccount._
 
   var balance = BigInt(0)
 
   def receive: Receive = {
-    case CreateAccount(initialAmount) => {
-      balance = initialAmount
-      sender ! BankAccountCase.Done(s"Created account with: $initialAmount")
+    case CreateAccount(initialBalance) => {
+      balance = initialBalance
+      sender ! Done(s"Created account with: $initialBalance")
     }
     case Deposit(amount) => {
       balance += amount
-      sender ! BankAccountCase.Done(s"Deposited $amount")
+      sender ! Done(s"Deposited $amount")
     }
     case Withdraw(amount) if amount <= balance => {
       balance -= amount
-      sender ! BankAccountCase.Done(s"Withdrawed $amount")
+      sender ! Done(s"Withdrawed $amount")
     }
-    case BankStatement => {
-      sender ! BankAccountCase.Done(s"Bank statement: $balance")
+    case FetchBankStatement => {
+      sender ! BankStatement(balance)
     }
-    case _ => sender ! BankAccountCase.Failed(s"Operation not supported")
+    case _ => sender ! Failed(s"Operation not supported")
   }
 }
 
 class BankAccountMain extends Actor {
-  import BankAccountCase._
+  import BankAccount._
 
-  val bankAccount = context.actorOf(Props[BankAccountCase], "bankAccount")
+  private val bankAccount = context.actorOf(Props[BankAccount], "bankAccount")
 
   def receive: Receive = {
     case "start" =>
       bankAccount ! CreateAccount(50)
       bankAccount ! Deposit(100)
       bankAccount ! Withdraw(10)
-      bankAccount ! BankStatement
-    case BankAccountCase.Done(message) =>
+      bankAccount ! FetchBankStatement
+    case Done(message) =>
       println(message)
-    case BankAccountCase.Failed(message: String) =>
-      println(message)
+    case Failed(reason: String) =>
+      println(reason)
+      context.stop(self)
+    case BankStatement(balance) =>
+      println(s"The balance is $balance")
       context.stop(self)
   }
 }
