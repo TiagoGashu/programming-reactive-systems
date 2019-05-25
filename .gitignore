@@ -17,7 +17,11 @@ lecture-2/project/target/
 
 programming-with-future/async/target/
 programming-with-future/async/.idea/
+programming-with-future/async/.idea/*
+programming-with-future/async/.idea/**
 programming-with-future/async/project/target/
+
+/**/*.jar
 
 /**/target/*
 /**/target/**
