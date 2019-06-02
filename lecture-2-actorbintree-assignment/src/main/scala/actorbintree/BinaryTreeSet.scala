@@ -76,7 +76,6 @@ class BinaryTreeSet extends Actor {
     case Contains(requester: ActorRef, id: Int, elem: Int) =>
       sendOpAndDequeue(pendingQueue :+ Contains(requester, id, elem))
     case GC =>
-      println("Starting GC")
       val newRoot = createRoot
       root ! CopyTo(newRoot)
       context.become(garbageCollecting(pendingQueue, newRoot))
@@ -96,20 +95,15 @@ class BinaryTreeSet extends Actor {
     */
   def garbageCollecting(pendingQueue: Queue[Operation], newRoot: ActorRef): Receive = {
     case Insert(requester: ActorRef, id: Int, elem: Int) =>
-      println(s"Enqueuing insertion of $elem")
       context.become(garbageCollecting(pendingQueue :+ Insert(requester, id, elem), newRoot))
     case Remove(requester: ActorRef, id: Int, elem: Int) =>
-      println(s"Enqueuing removal of $elem")
       context.become(garbageCollecting(pendingQueue :+ Remove(requester, id, elem), newRoot))
     case Contains(requester: ActorRef, id: Int, elem: Int) =>
-      println(s"Enqueuing contains op of $elem")
       context.become(garbageCollecting(pendingQueue :+ Contains(requester, id, elem), newRoot))
     case CopyFinished =>
-      println("Finished GC")
       root = newRoot
       if(pendingQueue.isEmpty) waiting
       else {
-        println(s"Running pending ops. size: ${pendingQueue.size}")
         sendOpAndDequeue(pendingQueue)
       }
   }
@@ -145,18 +139,15 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
   val waiting: Receive = {
     case Insert(requester: ActorRef, id: Int, elem: Int) => {
       if(this.elem == elem) {
-        println("Found an element already inserted")
         removed = false
         requester ! OperationFinished(id)
       } else {
 
         val pos = if (this.elem > elem) Left else Right
         if (subtrees.contains(pos)) {
-          println(s"recursive call to $pos")
           subtrees(pos) ! Insert(requester, id, elem)
         }
         else {
-          println(s"${this.elem}: inserting a node at $pos with $elem")
           subtrees = subtrees + (pos -> context.actorOf(props(elem, initiallyRemoved = false)))
           requester ! OperationFinished(id)
         }
@@ -187,7 +178,6 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
       }
     }
     case CopyTo(newRoot: ActorRef) =>
-      println(s"Starting copy to new root. node: $elem")
       var expectedChildren: Set[ActorRef] = Set()
       if(!this.removed) {
         newRoot ! Insert(this.self, 99, this.elem)
@@ -195,7 +185,6 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
       }
       positions.foreach(p => {
         if(subtrees contains p) {
-          println(s"Node: $elem. sending msg to child $p to copy to new root")
           expectedChildren = expectedChildren + subtrees(p)
           subtrees(p) ! CopyTo(newRoot)
         }
@@ -203,7 +192,6 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
       val client = sender
       if(expectedChildren.nonEmpty) context.become(copying(client, expectedChildren, insertConfirmed = this.removed))
       else {
-        println("sending copy finished!")
         sender ! CopyFinished
         self ! PoisonPill
       }
@@ -216,7 +204,6 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
   def copying(client: ActorRef, expected: Set[ActorRef], insertConfirmed: Boolean): Receive = {
     // finished the insert in new root
     case OperationFinished(id) => {
-      println(s"New root inserted my node. node: ${this.elem}")
       if(copyingFinished(expected, this.self)) {
         client ! CopyFinished
         self ! PoisonPill
@@ -224,7 +211,6 @@ class BinaryTreeNode(val elem: Int, initiallyRemoved: Boolean) extends Actor {
       else context.become(copying(client, expected - this.self, insertConfirmed = true))
     }
     case CopyFinished => {
-      println(s"New root inserted my child node")
       if(copyingFinished(expected, sender)) {
         client ! CopyFinished
         self ! PoisonPill
