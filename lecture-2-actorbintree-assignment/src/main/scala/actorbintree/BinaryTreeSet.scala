@@ -70,22 +70,15 @@ class BinaryTreeSet extends Actor {
   /** Accepts `Operation` and `GC` messages. */
   val waiting: Receive = {
     case Insert(requester: ActorRef, id: Int, elem: Int) =>
-      sendOpAndDequeue(pendingQueue :+ Insert(requester, id, elem))
+      root ! Insert(requester, id, elem)
     case Remove(requester: ActorRef, id: Int, elem: Int) =>
-      sendOpAndDequeue(pendingQueue :+ Remove(requester, id, elem))
+      root ! Remove(requester, id, elem)
     case Contains(requester: ActorRef, id: Int, elem: Int) =>
-      sendOpAndDequeue(pendingQueue :+ Contains(requester, id, elem))
+      root ! Contains(requester, id, elem)
     case GC =>
       val newRoot = createRoot
-      root ! CopyTo(newRoot)
       context.become(garbageCollecting(pendingQueue, newRoot))
-  }
-
-  def sendOpAndDequeue(pendingQueue: Queue[Operation]): Receive = {
-    val op = pendingQueue.head
-    root ! op
-    if(pendingQueue.tail isEmpty) waiting
-    else sendOpAndDequeue(pendingQueue.tail)
+      root ! CopyTo(newRoot)
   }
 
   // optional
@@ -102,9 +95,9 @@ class BinaryTreeSet extends Actor {
       context.become(garbageCollecting(pendingQueue :+ Contains(requester, id, elem), newRoot))
     case CopyFinished =>
       root = newRoot
-      if(pendingQueue.isEmpty) waiting
-      else {
-        sendOpAndDequeue(pendingQueue)
+      context.become(waiting)
+      pendingQueue foreach {
+        op => root ! op
       }
   }
 
