@@ -1,8 +1,10 @@
 package kvstore
 
-import akka.actor.{ OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated, ActorRef, Actor }
+import akka.actor.{Actor, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
 import kvstore.Arbiter._
-import akka.pattern.{ ask, pipe }
+import akka.pattern.{ask, pipe}
+import akka.stream.Supervision
+
 import scala.concurrent.duration._
 import akka.util.Timeout
 
@@ -39,18 +41,41 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
   // the current set of replicators
   var replicators = Set.empty[ActorRef]
 
+  val persister = context.actorOf(persistenceProps)
+  context.watch(persister)
+  // supervision strategy
+  override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 2) {
+    case _: PersistenceException => SupervisorStrategy.Restart
+  }
+
+  // keeps the requesters mapped by id
+  var requesters = Map.empty[Long, ActorRef]
+
+  arbiter ! Join
 
   def receive = {
     case JoinedPrimary   => context.become(leader)
     case JoinedSecondary => context.become(replica)
   }
 
-  /* TODO Behavior for  the leader role. */
   val leader: Receive = {
-    case _ =>
+    case Insert(k, v, id) =>
+      requesters = requesters + (id -> sender)
+      kv = kv + (k -> v)
+      persister ! Persist(k, Some(v), id)
+    case Remove(k, id) =>
+      requesters = requesters + (id -> sender)
+      kv = kv - k
+      persister ! Persist(k, None, id)
+    case Get(k, id) =>
+      val value = if(kv contains k) Some(kv(k)) else None
+      sender ! GetResult(k, value, id)
+    case Persisted(_, id) =>
+      val requester = requesters(id)
+      requesters = requesters - id
+      requester ! OperationAck(id)
   }
 
-  /* TODO Behavior for the replica role. */
   val replica: Receive = {
     case _ =>
   }
