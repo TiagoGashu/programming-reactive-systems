@@ -1,9 +1,7 @@
 package kvstore
 
-import akka.actor.Props
-import akka.actor.Actor
-import akka.actor.ActorRef
-import kvstore.Persistence.Persisted
+import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props, ReceiveTimeout, SupervisorStrategy}
+import kvstore.Persistence.{Persisted, PersistenceException}
 import kvstore.Replica.OperationAck
 
 import scala.concurrent.duration._
@@ -38,14 +36,23 @@ class Replicator(val replica: ActorRef) extends Actor {
     ret
   }
 
+  private def getLasSeq() = _seqCounter - 1
+
   def receive: Receive = {
     case op: Replicate =>
       val seq = nextSeq()
       val tuple = (sender, op)
       acks += (seq -> tuple)
+      context.setReceiveTimeout(Duration.create("100ms"))
+      replica ! Snapshot(op.key, op.valueOption, seq)
+    case ReceiveTimeout =>
+      println(s"${getClass} received timeout... sending snapshot again")
+      val seq = getLasSeq()
+      val (sender, op) = acks(seq)
+      context.setReceiveTimeout(Duration.create("100ms"))
       replica ! Snapshot(op.key, op.valueOption, seq)
     case SnapshotAck(k, seq) =>
-      println("Received snapshot ack from secondary replica")
+      context.setReceiveTimeout(Duration.Undefined)
       val (primary, op) = acks(seq)
       acks -= seq
       primary ! Replicated(k, op.id)
