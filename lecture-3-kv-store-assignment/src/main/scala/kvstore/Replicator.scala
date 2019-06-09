@@ -1,6 +1,6 @@
 package kvstore
 
-import akka.actor.{Actor, ActorRef, OneForOneStrategy, Props, ReceiveTimeout, SupervisorStrategy}
+import akka.actor.{Actor, ActorRef, Cancellable, OneForOneStrategy, Props, ReceiveTimeout, SupervisorStrategy}
 import kvstore.Persistence.{Persisted, PersistenceException}
 import kvstore.Replica.OperationAck
 
@@ -28,6 +28,7 @@ class Replicator(val replica: ActorRef) extends Actor {
   var acks = Map.empty[Long, (ActorRef, Replicate)]
   // a sequence of not-yet-sent snapshots (you can disregard this if not implementing batching)
   var pending = Vector.empty[Snapshot]
+  var pendingSnaps = Map.empty[Long, Cancellable]
 
   var _seqCounter = 0L
   def nextSeq() = {
@@ -43,16 +44,12 @@ class Replicator(val replica: ActorRef) extends Actor {
       val seq = nextSeq()
       val tuple = (sender, op)
       acks += (seq -> tuple)
-      context.setReceiveTimeout(Duration.create("100ms"))
-      replica ! Snapshot(op.key, op.valueOption, seq)
-    case ReceiveTimeout =>
-      println(s"${getClass} received timeout... sending snapshot again")
-      val seq = getLasSeq()
-      val (sender, op) = acks(seq)
-      context.setReceiveTimeout(Duration.create("100ms"))
-      replica ! Snapshot(op.key, op.valueOption, seq)
+      val cancellable = context.system.scheduler.schedule(0 seconds, 100 milliseconds)(replica ! Snapshot(op.key, op.valueOption, seq))
+      pendingSnaps += (seq -> cancellable)
     case SnapshotAck(k, seq) =>
-      context.setReceiveTimeout(Duration.Undefined)
+      val cancellable = pendingSnaps(seq)
+      pendingSnaps -= seq
+      cancellable.cancel()
       val (primary, op) = acks(seq)
       acks -= seq
       primary ! Replicated(k, op.id)

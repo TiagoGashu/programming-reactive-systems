@@ -1,6 +1,6 @@
 package kvstore
 
-import akka.actor.{Actor, ActorRef, OneForOneStrategy, PoisonPill, Props, ReceiveTimeout, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorRef, Cancellable, OneForOneStrategy, PoisonPill, Props, ReceiveTimeout, SupervisorStrategy, Terminated}
 import kvstore.Arbiter._
 import akka.pattern.{ask, pipe}
 import akka.stream.Supervision
@@ -52,6 +52,7 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
   var requesters = Map.empty[Long, ActorRef]
   // maps from seq to sender
   var requestersSnaps = Map.empty[Long, (ActorRef, Persist)]
+  var pendingPersists = Map.empty[Long, Cancellable]
   var expectedSeq: Long = 0L
 
   def getLastSeq() = expectedSeq - 1
@@ -121,16 +122,12 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
         val persist = Persist(k, v, seq)
         val tuple = (sender, persist)
         requestersSnaps += (seq -> tuple)
-        context.setReceiveTimeout(Duration.create("100ms"))
-        persister ! Persist(k, v, seq)
+        val cancellable = context.system.scheduler.schedule(0 seconds, 100 milliseconds)(persister ! persist)
+        pendingPersists += (seq -> cancellable)
       }
-    case ReceiveTimeout =>
-      val seq = getLastSeq()
-      val (_, persist) = requestersSnaps(seq)
-      context.setReceiveTimeout(Duration.create("100ms"))
-      persister ! persist
     case Persisted(k, seq) =>
-      context.setReceiveTimeout(Duration.Undefined)
+      val cancellable = pendingPersists(seq)
+      cancellable.cancel()
       val (requester, _) = requestersSnaps(seq)
       requestersSnaps -= seq
       requester ! SnapshotAck(k, seq)
