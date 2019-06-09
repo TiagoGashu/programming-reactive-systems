@@ -1,6 +1,6 @@
 package kvstore
 
-import akka.actor.{Actor, ActorRef, OneForOneStrategy, PoisonPill, Props, SupervisorStrategy, Terminated}
+import akka.actor.{Actor, ActorRef, OneForOneStrategy, PoisonPill, Props, ReceiveTimeout, SupervisorStrategy, Terminated}
 import kvstore.Arbiter._
 import akka.pattern.{ask, pipe}
 import akka.stream.Supervision
@@ -44,15 +44,17 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
   val persister = context.actorOf(persistenceProps)
   context.watch(persister)
   // supervision strategy
-  override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 2) {
+  override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 3) {
     case _: PersistenceException => SupervisorStrategy.Restart
   }
 
   // keeps the requesters mapped by id
   var requesters = Map.empty[Long, ActorRef]
   // maps from seq to sender
-  var requestersSnaps = Map.empty[Long, ActorRef]
+  var requestersSnaps = Map.empty[Long, (ActorRef, Persist)]
   var expectedSeq: Long = 0L
+
+  def getLastSeq() = expectedSeq - 1
 
   arbiter ! Join
 
@@ -116,11 +118,20 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
         expectedSeq += 1
         if (v.isEmpty) kv -= k
         else kv += (k -> v.get)
-        requestersSnaps += (seq -> sender)
+        val persist = Persist(k, v, seq)
+        val tuple = (sender, persist)
+        requestersSnaps += (seq -> tuple)
+        context.setReceiveTimeout(Duration.create("100ms"))
         persister ! Persist(k, v, seq)
       }
+    case ReceiveTimeout =>
+      val seq = getLastSeq()
+      val (_, persist) = requestersSnaps(seq)
+      context.setReceiveTimeout(Duration.create("100ms"))
+      persister ! persist
     case Persisted(k, seq) =>
-      val requester = requestersSnaps(seq)
+      context.setReceiveTimeout(Duration.Undefined)
+      val (requester, _) = requestersSnaps(seq)
       requestersSnaps -= seq
       requester ! SnapshotAck(k, seq)
   }
