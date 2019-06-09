@@ -50,6 +50,9 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
 
   // keeps the requesters mapped by id
   var requesters = Map.empty[Long, ActorRef]
+  // maps from seq to sender
+  var requestersSnaps = Map.empty[Long, ActorRef]
+  var expectedSeq: Long = 0L
 
   arbiter ! Join
 
@@ -59,14 +62,14 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
   }
 
   val leader: Receive = {
-    case Insert(k, v, id) =>
-      requesters = requesters + (id -> sender)
-      kv = kv + (k -> v)
-      persister ! Persist(k, Some(v), id)
-    case Remove(k, id) =>
-      requesters = requesters + (id -> sender)
-      kv = kv - k
-      persister ! Persist(k, None, id)
+    case Replicas(replicas) =>
+      val secondaryReplicas = replicas - this.self
+      val newReplicas = secondaryReplicas diff secondaries.keySet
+      val deletedReplicas = secondaries.keySet diff secondaryReplicas
+      newReplicas foreach createReplicator
+      deletedReplicas foreach deleteReplicator
+    case Insert(k, v, id) => update(k, Some(v), id)
+    case Remove(k, id) => update(k, None, id)
     case Get(k, id) =>
       val value = if(kv contains k) Some(kv(k)) else None
       sender ! GetResult(k, value, id)
@@ -76,8 +79,50 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
       requester ! OperationAck(id)
   }
 
+  private def update(k: String, v: Option[String], id: Long) = {
+    requesters += (id -> sender)
+    if(v.isEmpty) kv -= k
+    else kv += (k -> v.get)
+    persister ! Persist(k, v, id)
+    replicators foreach { _ ! Replicate(k, v, id) }
+  }
+
+  private def createReplicator(replica: ActorRef) = {
+    val newReplicator = context.actorOf(Replicator.props(replica))
+    secondaries += (replica -> newReplicator)
+    replicators += newReplicator
+    kv foreach { case (k, v) => newReplicator ! Replicate(k, Some(v), -1) }
+  }
+
+  private def deleteReplicator(delReplica: ActorRef) = {
+    val deletedReplicator = secondaries(delReplica)
+    secondaries -= delReplica
+    replicators -= deletedReplicator
+  }
+
   val replica: Receive = {
-    case _ =>
+    case Get(k, id) =>
+      val value = if(kv contains k) Some(kv(k)) else None
+      sender ! GetResult(k, value, id)
+    case Snapshot(k, v, seq) =>
+      if(expectedSeq == -1) {
+        expectedSeq = seq
+      }
+
+      if(seq < expectedSeq) {
+        sender ! SnapshotAck(k, seq)
+      }
+      else if(seq == expectedSeq) {
+        expectedSeq += 1
+        if (v.isEmpty) kv -= k
+        else kv += (k -> v.get)
+        requestersSnaps += (seq -> sender)
+        persister ! Persist(k, v, seq)
+      }
+    case Persisted(k, seq) =>
+      val requester = requestersSnaps(seq)
+      requestersSnaps -= seq
+      requester ! SnapshotAck(k, seq)
   }
 
 }

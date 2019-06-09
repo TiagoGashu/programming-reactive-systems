@@ -3,6 +3,9 @@ package kvstore
 import akka.actor.Props
 import akka.actor.Actor
 import akka.actor.ActorRef
+import kvstore.Persistence.Persisted
+import kvstore.Replica.OperationAck
+
 import scala.concurrent.duration._
 
 object Replicator {
@@ -27,7 +30,7 @@ class Replicator(val replica: ActorRef) extends Actor {
   var acks = Map.empty[Long, (ActorRef, Replicate)]
   // a sequence of not-yet-sent snapshots (you can disregard this if not implementing batching)
   var pending = Vector.empty[Snapshot]
-  
+
   var _seqCounter = 0L
   def nextSeq() = {
     val ret = _seqCounter
@@ -35,10 +38,17 @@ class Replicator(val replica: ActorRef) extends Actor {
     ret
   }
 
-  
-  /* TODO Behavior for the Replicator. */
   def receive: Receive = {
-    case _ =>
+    case op: Replicate =>
+      val seq = nextSeq()
+      val tuple = (sender, op)
+      acks += (seq -> tuple)
+      replica ! Snapshot(op.key, op.valueOption, seq)
+    case SnapshotAck(k, seq) =>
+      println("Received snapshot ack from secondary replica")
+      val (primary, op) = acks(seq)
+      acks -= seq
+      primary ! Replicated(k, op.id)
   }
 
 }
