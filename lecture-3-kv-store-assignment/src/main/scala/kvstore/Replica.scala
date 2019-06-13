@@ -48,6 +48,8 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
     case _: PersistenceException => SupervisorStrategy.Restart
   }
 
+  var replicationId = -1
+
   // keeps the requesters mapped by id
   var requesters = Map.empty[Long, ActorRef]
 
@@ -59,6 +61,7 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
 
   var pendingPersists = Map.empty[Long, (Cancellable, Cancellable, Map[ActorRef, Cancellable])]
 
+  // controls insert and update
   // maps from id to set of replicators
   var pendingReplicators = Map.empty[Long, Set[ActorRef]]
 
@@ -80,7 +83,6 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
       val deletedReplicas = secondaries.keySet diff secondaryReplicas
       newReplicas foreach createReplicator
       deletedReplicas foreach deleteReplicator
-      println(s"I have ${replicators.size} replicators")
 
     case Insert(k, v, id) => update(k, Some(v), id)
     case Remove(k, id) => update(k, None, id)
@@ -103,26 +105,28 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
       }
 
     case Replicated(_, id) =>
-      // TODO: control replication of new/deleted replicas
-
-      val replicator = sender
-      val updatedReplicators = pendingReplicators(id) - replicator
-      if (updatedReplicators.isEmpty) {
-        updateSecondariesCompleteness(id)
-      }
-
-      val (cancellable, cancellableTimeLimit, cancellableReplicators) = pendingPersists(id)
-      pendingReplicators += (id -> (pendingReplicators(id) - replicator))
-      if (completed(id)) {
-        cancellable.cancel()
-        cancellableTimeLimit.cancel()
-        cancellableReplicators foreach { case (_, v) =>
-          v.cancel()
+      if(id == replicationId) {
+        // ignores replication msgs of key values of new replicas
+      } else {
+        val replicator = sender
+        val updatedReplicators = pendingReplicators(id) - replicator
+        if (updatedReplicators.isEmpty) {
+          updateSecondariesCompleteness(id)
         }
-        val requester = requesters(id)
-        requesters = requesters - id
-        pendingReplicators -= id
-        requester ! OperationAck(id)
+
+        val (cancellable, cancellableTimeLimit, cancellableReplicators) = pendingPersists(id)
+        pendingReplicators += (id -> (pendingReplicators(id) - replicator))
+        if (completed(id)) {
+          cancellable.cancel()
+          cancellableTimeLimit.cancel()
+          cancellableReplicators foreach { case (_, v) =>
+            v.cancel()
+          }
+          val requester = requesters(id)
+          requesters = requesters - id
+          pendingReplicators -= id
+          requester ! OperationAck(id)
+        }
       }
   }
 
@@ -165,19 +169,57 @@ class Replica(val arbiter: ActorRef, persistenceProps: Props) extends Actor {
 
   private def completed(id: Long) = completeness(id)._1 && completeness(id)._2
 
-  // TODO:
   private def createReplicator(replica: ActorRef) = {
     val newReplicator = context.actorOf(Replicator.props(replica))
     secondaries += (replica -> newReplicator)
     replicators += newReplicator
-    kv foreach { case (k, v) => newReplicator ! Replicate(k, Some(v), -1) }
+    kv foreach { case (k, v) => newReplicator ! Replicate(k, Some(v), replicationId) }
   }
 
-  // TODO:
   private def deleteReplicator(delReplica: ActorRef) = {
     val deletedReplicator = secondaries(delReplica)
     secondaries -= delReplica
     replicators -= deletedReplicator
+
+    pendingPersists foreach { case(_, (_, _, cancellableReplicators)) =>
+      if(cancellableReplicators.contains(deletedReplicator)) {
+        cancellableReplicators(deletedReplicator).cancel()
+      }
+    }
+
+    // TODO: refactor :'(
+    pendingReplicators.keySet foreach  { k =>
+      val replicators = pendingReplicators(k)
+      if(replicators.contains(deletedReplicator)) {
+        val updatedReplicators = replicators - deletedReplicator
+        pendingReplicators += (k -> updatedReplicators)
+        val size = pendingReplicators(k).size
+        if (updatedReplicators.isEmpty) {
+          updateSecondariesCompleteness(k)
+        }
+      }
+    }
+
+    pendingPersists.keySet foreach { k =>
+      val (cancellable, cancellableTimeLimit, cancellableReplicators) = pendingPersists(k)
+      pendingPersists += (k -> Tuple3(cancellable, cancellableTimeLimit, cancellableReplicators - deletedReplicator))
+    }
+
+    pendingReplicators foreach { case(id, _) =>
+      val (cancellable, cancellableTimeLimit, cancellableReplicators) = pendingPersists(id)
+      if(completed(id)) {
+        cancellable.cancel()
+        cancellableTimeLimit.cancel()
+        cancellableReplicators foreach { case (_, v) =>
+          v.cancel()
+        }
+        val requester = requesters(id)
+        requesters = requesters - id
+        pendingReplicators -= id
+        requester ! OperationAck(id)
+      }
+    }
+
     context.stop(deletedReplicator)
   }
 
