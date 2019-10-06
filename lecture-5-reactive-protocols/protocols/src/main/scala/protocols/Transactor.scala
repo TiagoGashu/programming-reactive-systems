@@ -1,5 +1,6 @@
 package protocols
 
+import akka.actor.PoisonPill
 import akka.actor.typed._
 import akka.actor.typed.scaladsl._
 
@@ -30,8 +31,8 @@ object Transactor {
       * @param sessionTimeout Delay before rolling back the pending modifications and
       *                       terminating the session
       */
-    def apply[T](value: T, sessionTimeout: FiniteDuration): Behavior[Command[T]] =
-        ???
+    def apply[T](value: T, sessionTimeout: FiniteDuration): Behavior[PrivateCommand[T]] =
+        SelectiveReceive(30, idle(value, sessionTimeout))
 
     /**
       * @return A behavior that defines how to react to any [[PrivateCommand]] when the transactor
@@ -51,8 +52,20 @@ object Transactor {
       *   - Messages other than [[Begin]] should not change the behavior.
       */
     private def idle[T](value: T, sessionTimeout: FiniteDuration): Behavior[PrivateCommand[T]] =
-                ???
-        
+        Behaviors.receive {
+            case (ctx, Begin(requester)) =>
+                val done: Set[Long] = Set.empty
+                val childSessionHandler = ctx.spawnAnonymous(sessionHandler(value, ctx.self, done))
+                requester ! childSessionHandler
+                ctx.watchWith(childSessionHandler, RolledBack(childSessionHandler))
+                inSession(value, sessionTimeout, childSessionHandler)
+            case (_, RolledBack(childSessionRef)) =>
+                childSessionRef ! Rollback()
+                Behaviors.same
+            case (_, Committed(_, _)) =>
+                Behaviors.same
+        }
+
     /**
       * @return A behavior that defines how to react to [[PrivateCommand]] messages when the transactor has
       *         a running session.
@@ -64,8 +77,20 @@ object Transactor {
       * @param sessionRef Reference to the child [[Session]] actor
       */
     private def inSession[T](rollbackValue: T, sessionTimeout: FiniteDuration, sessionRef: ActorRef[Session[T]]): Behavior[PrivateCommand[T]] =
-                ???
-        
+        Behaviors.setup { ctx =>
+            ctx.setReceiveTimeout(sessionTimeout, RolledBack(sessionRef))
+            sessionHandlerMessageReceiver(rollbackValue, sessionTimeout, sessionRef)
+        }
+
+    private def sessionHandlerMessageReceiver[T](rollbackValue: T, sessionTimeout: FiniteDuration, sessionRef: ActorRef[Session[T]]): Behavior[PrivateCommand[T]] =
+        Behaviors.receivePartial {
+            case (_, Committed(_, updatedValue)) =>
+                idle(updatedValue, sessionTimeout)
+            case (ctx, RolledBack(childSessionRef)) =>
+                ctx stop childSessionRef
+                idle(rollbackValue, sessionTimeout)
+        }
+
     /**
       * @return A behavior handling [[Session]] messages. See in the instructions
       *         the precise semantics that each message should have.
@@ -74,7 +99,26 @@ object Transactor {
       * @param commit Parent actor reference, to send the [[Committed]] message to
       * @param done Set of already applied [[Modify]] messages
       */
-    private def sessionHandler[T](currentValue: T, commit: ActorRef[Committed[T]], done: Set[Long]): Behavior[Session[T]] =
-                ???
-        
+    private def sessionHandler[T](currentValue: T, commit: ActorRef[Committed[T]], done: Set[Long]): Behavior[Session[T]] = Behaviors.receive {
+        case (_, Extract(fn, replyTo)) =>
+            replyTo ! fn(currentValue)
+            Behaviors.same
+        case (_, Modify(fn, id, reply, replyTo)) =>
+            if(done contains id) {
+                replyTo ! reply
+                Behaviors.same
+            } else {
+                val updatedValue = fn(currentValue)
+                replyTo ! reply
+                val updatedDone = done + id
+                sessionHandler(updatedValue, commit, updatedDone)
+            }
+        case (ctx, Commit(reply, replyTo)) =>
+            replyTo ! reply
+            commit ! Committed(ctx.self, currentValue)
+            Behaviors.stopped
+        case (_, Rollback()) =>
+            Behaviors.stopped
+    }
+
 }
