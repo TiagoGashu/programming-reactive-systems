@@ -5,6 +5,7 @@ import akka.event.Logging
 import akka.stream.scaladsl.{BroadcastHub, Flow, Framing, Keep, MergeHub, Sink, Source}
 import akka.stream.{ActorAttributes, Materializer}
 import akka.util.ByteString
+import followers.model.Event.{Broadcast, Follow, PrivateMsg, StatusUpdate, Unfollow}
 import followers.model.{Event, Followers, Identity}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
@@ -101,7 +102,36 @@ object Server {
     *  - you may find the `statefulMapConcat` operation useful.
     */
   val followersFlow: Flow[Event, (Event, Followers), NotUsed] =
-    unimplementedFlow
+    Flow[Event].statefulMapConcat { () =>
+
+      var usersToObservables: Followers = Map.empty
+
+      event => {
+        event match {
+          case Follow(_, fromUserId, toUserId) =>
+            usersToObservables.get(fromUserId) match {
+              case Some(observables) =>
+                val updatedObservables = observables + toUserId
+                usersToObservables += (fromUserId -> updatedObservables)
+              case None =>
+                usersToObservables += (fromUserId -> Set(toUserId))
+            }
+
+          case Unfollow(_, fromUserId, toUserId) =>
+            usersToObservables.get(fromUserId) match {
+              case Some(observables) =>
+                val updatedObservables = observables - toUserId
+                usersToObservables += (fromUserId -> updatedObservables)
+            }
+          case Broadcast(_) =>
+          case PrivateMsg(_, fromUserId, toUserId) =>
+          case StatusUpdate(_, fromUserId) =>
+        }
+
+        List((event, usersToObservables))
+      }
+
+    }
 
   /**
     * @return Whether the given user should be notified by the incoming `Event`,
@@ -110,8 +140,25 @@ object Server {
     * @param userId Id of the user
     * @param eventAndFollowers Event and current state of followers
     */
-  def isNotified(userId: Int)(eventAndFollowers: (Event, Followers)): Boolean =
-    ???
+  def isNotified(userId: Int)(eventAndFollowers: (Event, Followers)): Boolean = {
+    val (event, usersToObservables) = eventAndFollowers
+    event match {
+      case Follow(_, _, toUserId) =>
+        toUserId == userId
+      case Unfollow(_, _, _) =>
+        false
+      case Broadcast(_) =>
+        true
+      case PrivateMsg(_, _, toUserId) =>
+        toUserId == userId
+      case StatusUpdate(_, fromUserId) =>
+        val optObservables = usersToObservables.get(userId)
+        optObservables match {
+          case Some(observables) => observables.contains(fromUserId)
+          case None => false
+        }
+    }
+  }
 
   // Utilities to temporarily have unimplemented parts of the program
   private def unimplementedFlow[A, B, C]: Flow[A, B, C] =
