@@ -1,13 +1,12 @@
 package followers
 
-import akka.NotUsed
+import akka.{NotUsed, util}
 import akka.event.Logging
 import akka.stream.scaladsl.{BroadcastHub, Flow, Framing, Keep, MergeHub, Sink, Source}
 import akka.stream.{ActorAttributes, Materializer}
 import akka.util.ByteString
 import followers.model.{Event, Followers, Identity}
 
-import scala.collection.SortedSet
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
 /**
@@ -31,7 +30,8 @@ object Server {
     * Hint: you may find the [[Framing]] flows useful.
     */
   val reframedFlow: Flow[ByteString, String, NotUsed] =
-    unimplementedFlow
+    Framing.delimiter(util.ByteString.apply("\n"), 11)
+      .map(_.decodeString("UTF-8"))
 
   /**
     * A flow that consumes chunks of bytes and produces [[Event]] messages.
@@ -44,7 +44,7 @@ object Server {
     * Hint: reuse `reframedFlow`
     */
   val eventParserFlow: Flow[ByteString, Event, NotUsed] =
-    unimplementedFlow
+    reframedFlow.map(Event.parse)
 
   /**
     * Implement a Sink that will look for the first [[Identity]]
@@ -57,7 +57,9 @@ object Server {
     * (and have a look at `Keep.right`).
     */
   val identityParserSink: Sink[ByteString, Future[Identity]] =
-    unimplementedSink
+    reframedFlow
+      .map(Identity.parse)
+      .toMat(Sink.head)(Keep.right)
 
   /**
     * A flow that consumes unordered messages and produces messages ordered by `sequenceNr`.
@@ -72,7 +74,23 @@ object Server {
     * operation around in the operator.
     */
   val reintroduceOrdering: Flow[Event, Event, NotUsed] =
-    unimplementedFlow
+    Flow[Event].statefulMapConcat { () =>
+
+      var expectedSeq = 1
+      var eventsBuffer = List.empty[Event]
+
+      event =>
+        if(event.sequenceNr == expectedSeq) {
+          val orderedEvents = (event :: eventsBuffer).sortBy(_.sequenceNr)
+          expectedSeq = orderedEvents.last.sequenceNr + 1
+          eventsBuffer = List.empty
+          orderedEvents
+        } else {
+          eventsBuffer = eventsBuffer ++ List(event)
+          List()
+        }
+    }
+
 
   /**
     * A flow that associates a state of [[Followers]] to
