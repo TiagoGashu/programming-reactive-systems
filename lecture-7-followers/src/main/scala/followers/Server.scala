@@ -197,7 +197,9 @@ class Server()(implicit executionContext: ExecutionContext, materializer: Materi
       * of the followers Map.
       */
     val incomingDataFlow: Flow[ByteString, (Event, Followers), NotUsed] =
-      unimplementedFlow
+      eventParserFlow
+        .via(reintroduceOrdering)
+        .via(followersFlow)
 
     // Wires the MergeHub and the BroadcastHub together and runs the graph
     MergeHub.source[ByteString](256)
@@ -206,6 +208,9 @@ class Server()(implicit executionContext: ExecutionContext, materializer: Materi
       .withAttributes(ActorAttributes.logLevels(Logging.DebugLevel, Logging.DebugLevel, Logging.DebugLevel))
       .run()
   }
+
+  val toNothing: Flow[(Event, Followers), Nothing, NotUsed] =
+    Flow[(Event, Followers)].map(_ => ???)
 
   /**
     * The "final form" of the event flow.
@@ -221,7 +226,8 @@ class Server()(implicit executionContext: ExecutionContext, materializer: Materi
     * `Flow.fromSinkAndSourceCoupled` to find how to achieve that.
     */
   val eventsFlow: Flow[ByteString, Nothing, NotUsed] =
-    unimplementedFlow
+    Flow.fromSinkAndSourceCoupled(inboundSink, broadcastOut)
+    .via(toNothing)
 
   /**
     * @return The source of events for the given user
