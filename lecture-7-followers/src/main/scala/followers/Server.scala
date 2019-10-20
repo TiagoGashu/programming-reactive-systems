@@ -242,7 +242,9 @@ class Server()(implicit executionContext: ExecutionContext, materializer: Materi
     * Status Update:   All current followers of the From User ID should be notified
     */
   def outgoingFlow(userId: Int): Source[ByteString, NotUsed] =
-    ???
+    broadcastOut.filter(tuple => isNotified(userId)(tuple))
+      .map { case (event, _) => event.render }
+
 
   /**
    * The "final form" of the client flow.
@@ -267,7 +269,10 @@ class Server()(implicit executionContext: ExecutionContext, materializer: Materi
 
     // A sink that parses the client identity and completes `clientIdPromise` with it
     val incoming: Sink[ByteString, NotUsed] =
-      ???
+      identityParserSink.mapMaterializedValue[NotUsed](futureIdentity => {
+        clientIdPromise.completeWith(futureIdentity)
+        NotUsed
+      })
 
     val outgoing = Source.fromFutureSource(clientIdPromise.future.map { identity =>
       outgoingFlow(identity.userId)
